@@ -7,6 +7,11 @@ from django.forms.models import inlineformset_factory
 class RegisterForm(forms.ModelForm):
     password = forms.CharField(label="Пароль", widget=forms.PasswordInput)
     password2 = forms.CharField(label="Повтор пароля", widget=forms.PasswordInput)
+    bio = forms.CharField(
+        label="Биография",
+        widget=forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
+        required=False
+    )
 
     def save(self, commit=True):
         new_user = super().save(commit=False)
@@ -24,7 +29,7 @@ class RegisterForm(forms.ModelForm):
 
     class Meta:
         model = CustomUser
-        fields = ("avatar", "first_name", "last_name", "username", "email")
+        fields = ("avatar", "first_name", "last_name", "username", "email", "bio")
 
 class UserLoginForm(forms.Form):
     username = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Введите логин'}))

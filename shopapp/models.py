@@ -4,8 +4,6 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth import get_user_model
 
-
-
 class CustomUser(AbstractUser):
     last_name = models.CharField(max_length=254, verbose_name="Фамилия")
     first_name = models.CharField(max_length=254, verbose_name="Имя")
@@ -19,7 +17,7 @@ class CustomUser(AbstractUser):
         return f"{self.first_name} {self.last_name}"
 
 class Post(models.Model):
-    author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, verbose_name="Автор")
+    author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, verbose_name="Автор", related_name='posts')
     title = models.CharField(max_length=255, verbose_name="Заголовок")
     content = models.TextField(verbose_name="Содержимое поста")
     created_at = models.DateTimeField(default=timezone.now, verbose_name="Дата и время публикации")
