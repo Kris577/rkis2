@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}Изменить комментарий{% endblock %}
+
+{% block content %}
+<h2>Редактировать комментарий</h2>
+
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="btn btn-success w-50" type="submit">Сохранить изменения</button>
+</form>
+
+<a href="{% url 'shopapp:post_detail' comment.post.pk %}">Назад к посту</a>
+{% endblock %}

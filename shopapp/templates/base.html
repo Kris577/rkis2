@@ -15,11 +15,9 @@
             <h1><a class="text-decoration-none" href="{% url 'shopapp:index' %}">Главная</a></h1>
             <nav>
                 {% if user.is_authenticated %}
-                    <a class="btn btn-outline-primary btn-sm me-2" href="{% url 'shopapp:profile' user.id %}">Профиль</a>
+                    <a class="btn btn-outline-primary btn-sm me-2" href="{% url 'shopapp:create_post' %}">Создать пост</a>
+                    <a class="btn btn-outline-primary btn-sm me-2" href="{% url 'shopapp:profile' %}">Профиль</a>
                     <a class="btn btn-outline-secondary btn-sm me-2" href="{% url 'shopapp:logout' %}">Выход</a>
-                    {% if user.is_superuser %}
-                        <a class="btn btn-outline-success btn-sm" href="{% url 'shopapp:question_form' %}">Создать пост</a>
-                    {% endif %}
                 {% else %}
                     <a class="btn btn-outline-primary btn-sm me-2" href="{% url 'shopapp:register' %}">Регистрация</a>
                     <a class="btn btn-outline-secondary btn-sm" href="{% url 'shopapp:login' %}">Вход</a>

@@ -7,7 +7,6 @@
     <h1 class="display-4">Добро пожаловать на наш сайт</h1>
   </div>
 
-
 <h2 class="mb-4">Все посты</h2>
 
 {% for post in posts %}
@@ -18,7 +17,7 @@
             <p class="text-muted">
                 Автор: {{ post.author }} | Дата публикации: {{ post.created_at }} | Комментариев: {{ post.comments.count }}
             </p>
-            <a href="{% url 'post_detail' post.pk %}" class="btn btn-primary">Читать далее</a>
+            <a href="{% url 'shopapp:post_detail' post.pk %}" class="btn btn-primary">Читать далее</a>
         </div>
     </div>
 {% endfor %}

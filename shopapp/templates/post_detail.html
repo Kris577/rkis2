@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block content %}
+<h2>{{ post.title }}</h2>
+<p class="text-muted">
+    Автор: {{ post.author }} | Дата публикации: {{ post.created_at }}
+</p>
+<p>{{ post.content }}</p>
+
+<form method="POST" action="{% url 'shopapp:like_post' post.pk %}">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-outline-primary">
+        ❤ Лайков: {{ post.likes.count }}
+    </button>
+</form>
+{% if post.author == user %}
+    <div class="my-3">
+        <a href="{% url 'shopapp:edit_post' post.pk %}" class="btn btn-warning btn-sm">&#9997; Редактировать</a>
+        <a href="{% url 'shopapp:delete_post' post.pk %}" class="btn btn-danger btn-sm">&#128465; Удалить</a>
+    </div>
+{% endif %}
+
+<hr>
+
+<h3>Комментарии</h3>
+
+{% for comment in comments %}
+    <div class="comment mb-3">
+        <p><strong>{{ comment.author }}</strong> ({{ comment.created_at }})</p>
+        <p>{{ comment.content }}</p>
+
+        {% if comment.author == user %}
+            <a href="{% url 'shopapp:edit_comment' comment.pk %}">Редактировать</a> |
+            <a href="{% url 'shopapp:delete_comment' comment.pk %}">Удалить</a>
+        {% endif %}
+    </div>
+{% empty %}
+    <p>Комментариев пока нет.</p>
+{% endfor %}
+
+<h4>Оставить комментарий</h4>
+ {% if user.is_authenticated %}
+<form method="POST">
+    {% csrf_token %}
+    {{ comment_form.as_p }}
+    <button type="submit" class="btn btn-success mb-4">Оставить комментарий</button>
+</form>
+ {% else %}
+    <p>Вам нужно авторизоваться чтобы писать комментарии</p>
+ {% endif %}
+{% endblock %}

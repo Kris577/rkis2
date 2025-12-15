@@ -7,7 +7,7 @@ from .models import CustomUser as User, Post, Like, Comment
 from django.core.paginator import Paginator
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-
+from django.core.paginator import Paginator
 
 def index(request):
     posts_list = Post.objects.all().order_by('-created_at')
@@ -18,7 +18,16 @@ def index(request):
 
 @login_required
 def profile(request):
-    return render(request, 'profile.html', {'user': request.user})
+    user = request.user
+    user_posts = Post.objects.filter(author=user).order_by('-created_at')
+    paginator = Paginator(user_posts, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'profile.html', {
+        'user': user,
+        'posts': page_obj
+    })
 
 
 @login_required
@@ -29,11 +38,11 @@ def edit_profile(request):
         if form.is_valid():
             form.save()
             messages.success(request, 'Профиль успешно обновлён.')
-            return redirect('profile')
+            return redirect('shopapp:profile')
     else:
         form = UserProfileForm(instance=user)
 
-    return render(request, 'edit_profile.html', {'form': form})
+    return render(request, 'user_form.html', {'form': form})
 
 
 @login_required
@@ -42,9 +51,9 @@ def delete_profile(request):
     if request.method == 'POST':
         user.delete()
         messages.success(request, 'Ваш профиль был удалён.')
-        return redirect('home')
+        return redirect('shopapp:index')
 
-    return render(request, 'delete_profile.html')
+    return render(request, 'delete_confirm_delete.html')
 
 
 def register(request):
@@ -54,7 +63,7 @@ def register(request):
             user = form.save()
             login(request, user)
             messages.success(request, 'Вы успешно зарегистрировались.')
-            return redirect('profile')
+            return redirect('shopapp:profile')
     else:
         form = UserRegistrationForm()
 
@@ -71,7 +80,7 @@ def user_login(request):
             if user is not None:
                 login(request, user)
                 messages.success(request, 'Вы успешно вошли в систему.')
-                return redirect('profile')
+                return redirect('shopapp:profile')
             else:
                 messages.error(request, 'Неправильное имя пользователя или пароль.')
     else:
@@ -84,7 +93,7 @@ def user_login(request):
 def user_logout(request):
     logout(request)
     messages.success(request, 'Вы успешно вышли из системы.')
-    return redirect('home')
+    return redirect('shopapp:index')
 
 def post_list(request):
     posts = Post.objects.all().order_by('-created_at')
@@ -97,7 +106,7 @@ def post_list(request):
 def like_post(request, pk):
     post = get_object_or_404(Post, pk=pk)
     post.likes.add(request.user)
-    return redirect('post_detail', pk=pk)
+    return redirect('shopapp:post_detail', pk=pk)
 
 
 def create_post(request):
@@ -107,7 +116,7 @@ def create_post(request):
             post = form.save(commit=False)
             post.author = request.user
             post.save()
-            return redirect('home')
+            return redirect('shopapp:index')
     else:
         form = PostForm()
     return render(request, 'create_post.html', {'form': form})
@@ -115,14 +124,14 @@ def create_post(request):
 def edit_post(request, pk):
     post = get_object_or_404(Post, pk=pk)
     if post.author != request.user:
-        return redirect('home')
+        return redirect('shopapp:index')
 
     if request.method == 'POST':
         form = PostForm(request.POST, instance=post)
         if form.is_valid():
             form.save()
             messages.success(request, 'Пост был успешно обновлён.')
-            return redirect('post_detail', pk=post.pk)
+            return redirect('shopapp:post_detail', pk=post.pk)
     else:
         form = PostForm(instance=post)
 
@@ -133,12 +142,12 @@ def edit_post(request, pk):
 def delete_post(request, pk):
     post = get_object_or_404(Post, pk=pk)
     if post.author != request.user:
-        return redirect('home')
+        return redirect('shopapp:index')
 
     if request.method == 'POST':
         post.delete()
         messages.success(request, 'Пост был успешно удален.')
-        return redirect('home')
+        return redirect('shopapp:index')
 
     return render(request, 'delete_post.html', {'post': post})
 
@@ -155,7 +164,7 @@ def post_detail(request, pk):
             comment.post = post
             comment.author = request.user
             comment.save()
-            return redirect('post_detail', pk=post.pk)
+            return redirect('shopapp:post_detail', pk=post.pk)
     return render(request, 'post_detail.html', {'post': post, 'comments': comments, 'comment_form': comment_form})
 
 
@@ -163,14 +172,13 @@ def edit_comment(request, pk):
     comment = get_object_or_404(Comment, pk=pk)
 
     if comment.author != request.user:
-        return redirect('post_detail', pk=comment.post.pk)
+        return redirect('shopapp:post_detail', pk=comment.post.pk)
 
     if request.method == 'POST':
         form = CommentForm(request.POST, instance=comment)
         if form.is_valid():
             form.save()
-            return redirect('post_detail',
-                            pk=comment.post.pk)
+            return redirect('shopapp:post_detail', pk=comment.post.pk)
     else:
         form = CommentForm(instance=comment)
 
@@ -182,6 +190,6 @@ def delete_comment(request, pk):
     if comment.author == request.user:
         post_pk = comment.post.pk
         comment.delete()
-        return redirect('post_detail', pk=post_pk)
+        return redirect('shopapp:post_detail', pk=post_pk)
     else:
-        return redirect('post_detail', pk=comment.post.pk)
+        return redirect('shopapp:post_detail', pk=comment.post.pk)

@@ -26,6 +26,10 @@ class RegisterForm(forms.ModelForm):
         model = CustomUser
         fields = ("avatar", "first_name", "last_name", "username", "email")
 
+class UserLoginForm(forms.Form):
+    username = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Введите логин'}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Введите пароль'}))
+
 class UpdateForm(forms.ModelForm):
     avatar = forms.ImageField(label="Фото профиля", required=False)
     last_name = forms.CharField(label="Фамилия", required=False)

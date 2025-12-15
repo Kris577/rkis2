@@ -100,6 +100,8 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 AUTH_USER_MODEL = 'shopapp.CustomUser'
+LOGIN_REDIRECT_URL = '/shopapp/'
+LOGOUT_REDIRECT_URL = '/shopapp/'
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
@@ -124,4 +126,4 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR, 'media'
+MEDIA_ROOT = BASE_DIR / 'media'
