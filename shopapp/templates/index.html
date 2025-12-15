@@ -1,10 +1,48 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'base.html' %}
 
-</body>
-</html>
+{% block title %}Главная страница{% endblock %}
+
+{% block content %}
+  <div class="text-center">
+    <h1 class="display-4">Добро пожаловать на наш сайт</h1>
+  </div>
+
+
+<h2 class="mb-4">Все посты</h2>
+
+{% for post in posts %}
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5 class="card-title">{{ post.title }}</h5>
+            <p class="card-text">{{ post.content|truncatewords:20 }}</p>
+            <p class="text-muted">
+                Автор: {{ post.author }} | Дата публикации: {{ post.created_at }} | Комментариев: {{ post.comments.count }}
+            </p>
+            <a href="{% url 'post_detail' post.pk %}" class="btn btn-primary">Читать далее</a>
+        </div>
+    </div>
+{% endfor %}
+
+<div class="mt-4">
+    <nav aria-label="Пагинация">
+        <ul class="pagination justify-content-center">
+            {% if posts.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ posts.previous_page_number }}">Предыдущая</a>
+                </li>
+            {% endif %}
+
+            <li class="page-item disabled">
+                <span class="page-link">Страница {{ posts.number }} из {{ posts.paginator.num_pages }}</span>
+            </li>
+
+            {% if posts.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ posts.next_page_number }}">Следующая</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+
+{% endblock %}

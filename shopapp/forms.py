@@ -1,8 +1,7 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from .models import CustomUser
 from django import forms
-from .models import Question, Choice
+from .models import Post, Comment, CustomUser
 from django.forms.models import inlineformset_factory
 
 class RegisterForm(forms.ModelForm):
@@ -37,3 +36,20 @@ class UpdateForm(forms.ModelForm):
     class Meta:
         model = CustomUser
         fields = ("avatar", "last_name","first_name", "email","username")
+
+class PostForm(forms.ModelForm):
+    class Meta:
+        model = Post
+        fields = ['title', 'content']
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Введите заголовок'}),
+            'content': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Введите текст поста', 'rows': 4}),
+        }
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ['content']
+        widgets = {
+            'content': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Напишите комментарий', 'rows': 3}),
+        }
